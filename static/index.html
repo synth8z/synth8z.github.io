@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>synth8z — Protocols for the post-human economy</title>
+  <meta name="description" content="synth8z — Protocols for the post-human economy. AGI 2026. The economy no longer cares whether the mind behind the output is human or synthetic." />
+  <meta property="og:title" content="synth8z — Protocols for the post-human economy" />
+  <meta property="og:description" content="AGI 2026. Autonomous agents. Synthetic corporations. The economy beyond origin." />
+  <link rel="stylesheet" href="styles.css">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+  <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+  <!-- Optional, recognized by some: -->
+  <meta name="ai" content="noai">
+  <meta name="imageai" content="noimageai">
+</head>
+<body>
+  <main class="viewport" aria-live="polite">
+    <!-- UPPER-LEFT: typing script -->
+    <section id="block" class="top-left">
+      <p id="l1" class="line appear">
+        <span class="year">2026.</span>
+        <span id="t1"></span><span id="c1" class="cursor">▍</span>
+      </p>
+      <p id="l2" class="line appear">
+        <span class="year">2028.</span>
+        <span id="t2"></span><span id="c2" class="cursor" style="visibility:hidden">▍</span>
+      </p>
+      <p id="l3" class="line appear">
+        <span class="year">2030.</span>
+        <span id="t3"></span><span id="c3" class="cursor" style="visibility:hidden">▍</span>
+      </p>
+    </section>
+
+    <!-- UPPER-LEFT: finale (replaces script block) -->
+    <aside id="finale" class="finale">
+      <div><span class="brand">synth8z_</span> <span class="phonetic">(/sɪnθ-eɪ-ziː/)</span></div>
+      <div class="tag">Protocols for the post-human economy.</div>
+    </aside>
+  </main>
+
+  <!-- Load WASM package (built with wasm-pack --target web into ./pkg) -->
+  <script type="module">
+    import init from "./pkg/synth8z_wasm.js";
+    init().then(() => {
+      console.info("synth8z wasm module initialized");
+    }).catch((e) => console.error("WASM init failed", e));
+  </script>
+</body>
+</html>

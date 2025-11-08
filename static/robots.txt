@@ -1,0 +1,21 @@
+# Block everything by default
+User-agent: *
+Disallow: /
+
+# Explicit AI/ML crawlers (trainers)
+User-agent: GPTBot            # OpenAI
+Disallow: /
+User-agent: Google-Extended   # Google AI training
+Disallow: /
+User-agent: CCBot             # Common Crawl (used for many datasets)
+Disallow: /
+User-agent: PerplexityBot     # Perplexity
+Disallow: /
+User-agent: Applebot-Extended # Apple AI training (if applicable)
+Disallow: /
+User-agent: Amazonbot         # Amazon crawling
+Disallow: /
+User-agent: Bytespider        # ByteDance
+Disallow: /
+User-agent: FacebookBot
+Disallow: /
