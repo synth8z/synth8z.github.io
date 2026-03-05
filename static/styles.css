@@ -1,3 +1,9 @@
+@property --boot-bg {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #000000;
+}
+
 :root{
   --bg0:#000000;         /* initial black */
   --bg1:#050505;         /* subtle warmed black */
@@ -5,16 +11,33 @@
   --accent:#0FAA6A;      /* dark terminal green */
   --muted:#9AA7B5;
   --pad:28px;
+  color-scheme: dark;
 }
 html,body{height:100%;margin:0;}
 body{
-  background:var(--bg0); color:var(--fg);
+  background:var(--boot-bg); color:var(--fg);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size:15px; line-height:1.65;
+  text-wrap: pretty;
   animation: bootfade 4s ease forwards, flicker 0.6s ease 0.4s 1;
 }
-@keyframes bootfade { to { background: var(--bg1); } }
+@keyframes bootfade { to { --boot-bg: #050505; } }
 @keyframes flicker { 0%,100% { filter: none; } 45% { filter: brightness(1.08); } 55% { filter: brightness(0.96); } }
+
+/* CRT scanline overlay */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
 
 .viewport{position:relative; min-height:100%;}
 
@@ -26,9 +49,8 @@ body{
 }
 .top-left.fadeout{
   opacity:0;
-  pointer-events: none;   /* can't interact while fading */
+  pointer-events: none;
 }
-/* helper used after transition completes */
 .top-left.hidden { display: none; }
 
 /* Finale (upper-left replacement) */
@@ -51,9 +73,17 @@ body{
   animation: blink 1.05s steps(1,end) infinite;
 }
 @keyframes blink{50%{opacity:0}}
+.cursor.hidden{ visibility:hidden; }
+.cursor.visible{ visibility:visible; }
 
 .appear{opacity:0; transform: translateY(4px); transition: opacity .5s ease, transform .5s ease;}
 .appear.show{opacity:1; transform:none;}
+
+/* View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.6s;
+}
 
 /* Responsive tweaks */
 @media (max-width: 720px){
@@ -68,6 +98,7 @@ body{
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
   body{ animation: none !important; }
+  body::after{ display: none; }
   .cursor{ animation: none !important; }
   .appear, .top-left, .finale{ transition: none !important; }
 }

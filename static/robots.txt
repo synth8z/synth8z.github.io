@@ -11,11 +11,23 @@ User-agent: CCBot             # Common Crawl (used for many datasets)
 Disallow: /
 User-agent: PerplexityBot     # Perplexity
 Disallow: /
-User-agent: Applebot-Extended # Apple AI training (if applicable)
+User-agent: Applebot-Extended # Apple AI training
 Disallow: /
 User-agent: Amazonbot         # Amazon crawling
 Disallow: /
 User-agent: Bytespider        # ByteDance
 Disallow: /
 User-agent: FacebookBot
+Disallow: /
+User-agent: ClaudeBot         # Anthropic
+Disallow: /
+User-agent: anthropic-ai      # Anthropic (alternate)
+Disallow: /
+User-agent: cohere-ai         # Cohere
+Disallow: /
+User-agent: Diffbot           # Diffbot
+Disallow: /
+User-agent: Omgilibot
+Disallow: /
+User-agent: YouBot            # You.com
 Disallow: /

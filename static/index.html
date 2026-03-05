@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self';">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), interest-cohort=()">
+  <meta name="referrer" content="no-referrer">
   <title>synth8z — Protocols for the post-human economy</title>
   <meta name="description" content="synth8z — Protocols for the post-human economy. AGI 2026. The economy no longer cares whether the mind behind the output is human or synthetic." />
   <meta property="og:title" content="synth8z — Protocols for the post-human economy" />
@@ -24,11 +27,11 @@
       </p>
       <p id="l2" class="line appear">
         <span class="year">2028.</span>
-        <span id="t2"></span><span id="c2" class="cursor" style="visibility:hidden">▍</span>
+        <span id="t2"></span><span id="c2" class="cursor hidden">▍</span>
       </p>
       <p id="l3" class="line appear">
         <span class="year">2030.</span>
-        <span id="t3"></span><span id="c3" class="cursor" style="visibility:hidden">▍</span>
+        <span id="t3"></span><span id="c3" class="cursor hidden">▍</span>
       </p>
     </section>
 
@@ -39,12 +42,6 @@
     </aside>
   </main>
 
-  <!-- Load WASM package (built with wasm-pack --target web into ./pkg) -->
-  <script type="module">
-    import init from "./pkg/synth8z_wasm.js";
-    init().then(() => {
-      console.info("synth8z wasm module initialized");
-    }).catch((e) => console.error("WASM init failed", e));
-  </script>
+  <script type="module" src="init.js"></script>
 </body>
 </html>

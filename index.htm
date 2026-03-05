@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), interest-cohort=()">
+<meta name="referrer" content="no-referrer">
 <title>synth8z — Protocols for the post-human economy</title>
 <meta name="description" content="synth8z — Protocols for the post-human economy. AGI 2026. The economy no longer cares whether the mind behind the output is human or synthetic." />
 <!-- Open Graph (optional but useful for shares) -->
@@ -10,6 +13,12 @@
 <meta property="og:description" content="AGI 2026. Autonomous agents. Synthetic corporations. The economy beyond origin." />
 <meta property="og:type" content="website" />
 <style>
+  @property --boot-bg {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #000000;
+  }
+
   :root{
     --bg0:#000000;         /* initial black */
     --bg1:#050505;         /* subtle warmed black */
@@ -17,31 +26,52 @@
     --accent:#0FAA6A;      /* dark terminal green */
     --muted:#9AA7B5;
     --pad:28px;
+    color-scheme: dark;
   }
   html,body{height:100%;margin:0;}
   body{
-    background:var(--bg0); color:var(--fg);
+    background:var(--boot-bg); color:var(--fg);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size:15px; line-height:1.65;
-    /* Point 1: subtle boot fade + tiny flicker */
+    text-wrap: pretty;
     animation: bootfade 4s ease forwards, flicker 0.6s ease 0.4s 1;
   }
-  @keyframes bootfade { to { background: var(--bg1); } }
+  @keyframes bootfade { to { --boot-bg: #050505; } }
   @keyframes flicker { 0%,100% { filter: none; } 45% { filter: brightness(1.08); } 55% { filter: brightness(0.96); } }
+
+  /* CRT scanline overlay */
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
 
   .viewport{position:relative; min-height:100%;}
   /* Typing block (upper-left) */
   .top-left{
     position:absolute; top:var(--pad); left:var(--pad); right:calc(var(--pad) + 40%);
     max-width:72ch; opacity:1; transition: opacity 1.1s ease;
+    z-index: 1;
   }
-  .top-left.fadeout{ opacity:0; }
+  .top-left.fadeout{
+    opacity:0;
+    pointer-events: none;
+  }
 
   /* Finale replaces the same quadrant (upper-left) */
   .finale{
     position:fixed; top:var(--pad); left:var(--pad);
     opacity:0; transform: translateY(6px);
     transition: opacity .9s ease, transform .9s ease;
+    z-index: 2;
   }
   .finale.show{ opacity:1; transform: translateY(0); }
   .brand{ color:var(--accent); font-weight:700; font-size:1.15rem; }
@@ -62,7 +92,13 @@
   .appear{opacity:0; transform: translateY(4px); transition: opacity .5s ease, transform .5s ease;}
   .appear.show{opacity:1; transform:none;}
 
-  /* Point 1d: Responsive tweaks */
+  /* View Transitions */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.6s;
+  }
+
+  /* Responsive tweaks */
   @media (max-width: 720px){
     :root{ --pad:20px; }
     .top-left{ right: var(--pad); max-width: 90%; }
@@ -75,6 +111,7 @@
   /* Reduced motion: skip animations */
   @media (prefers-reduced-motion: reduce){
     body{ animation: none !important; }
+    body::after{ display: none; }
     .cursor{ animation: none !important; }
     .appear, .top-left, .finale{ transition: none !important; }
   }
@@ -106,18 +143,15 @@
   </main>
 
 <script>
-  // Point 2: refined sentences (with improved rhythm)
   const L1 = " Amid a global arms race, AGI was achieved — quietly, then everywhere.";
   const L2 = " Autonomous agents went mainstream. 2028 was the last year humans had a monopoly on labour.";
-  const L3 = " By 2030, synthetic corporations—indistinguishable blends of humans and thinking machines—had become the norm.";
+  const L3 = " By 2030, synthetic corporations (\"synths\") — indistinguishable blends of humans and thinking machines — had become the norm.";
 
-  // Typing pace + timing
-  const SPEED = 58;               // ms per character (slow, readable)
-  const GAP_BETWEEN_LINES = 1500; // pause after each line typed
-  const GAP_BEFORE_FADE = 1600;   // wait after L3 before fading out block
-  const GAP_BEFORE_FINALE = 800;  // delay after fade completes before showing finale
+  const SPEED = 58;
+  const GAP_BETWEEN_LINES = 1500;
+  const GAP_BEFORE_FADE = 1600;
+  const GAP_BEFORE_FINALE = 800;
 
-  // DOM refs
   const t1=document.getElementById('t1'), c1=document.getElementById('c1'), l1=document.getElementById('l1');
   const t2=document.getElementById('t2'), c2=document.getElementById('c2'), l2=document.getElementById('l2');
   const t3=document.getElementById('t3'), c3=document.getElementById('c3'), l3=document.getElementById('l3');
@@ -137,6 +171,10 @@
     caret.style.visibility='visible'; step();
   }
 
+  function showFinale(){
+    finale.classList.add('show');
+  }
+
   (function run(){
     reveal(l1);
     typeInto(t1, L1, c1, () => {
@@ -146,16 +184,24 @@
           setTimeout(() => {
             reveal(l3);
             typeInto(t3, L3, c3, () => {
-              // Fade out all lines, then show finale in the same quadrant
               setTimeout(() => {
                 block.classList.add('fadeout');
-                const onEnd = () => {
-                  block.removeEventListener('transitionend', onEnd);
-                  setTimeout(() => finale.classList.add('show'), GAP_BEFORE_FINALE);
+                let finaleShown = false;
+                const triggerFinale = () => {
+                  if (finaleShown) return;
+                  finaleShown = true;
+                  if (document.startViewTransition) {
+                    document.startViewTransition(showFinale);
+                  } else {
+                    showFinale();
+                  }
                 };
-                block.addEventListener('transitionend', onEnd);
+                block.addEventListener('transitionend', function onEnd() {
+                  block.removeEventListener('transitionend', onEnd);
+                  setTimeout(triggerFinale, GAP_BEFORE_FINALE);
+                });
                 // Fallback if transition event doesn't fire
-                setTimeout(() => finale.classList.add('show'), 1400 + GAP_BEFORE_FINALE);
+                setTimeout(() => triggerFinale(), 1400 + GAP_BEFORE_FINALE);
               }, GAP_BEFORE_FADE);
             });
           }, GAP_BETWEEN_LINES);

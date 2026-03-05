@@ -62,7 +62,26 @@ async fn run() -> Result<JsValue, JsValue> {
     wait_for_transition_end(&block, fade_fallback_ms).await;
 
     TimeoutFuture::new(gap_before_finale).await;
-    add_class(&finale, "show")?;
+
+    // Use View Transitions API if available for a GPU-accelerated crossfade
+    let doc_val: &JsValue = doc.as_ref();
+    let has_vt = js_sys::Reflect::has(doc_val, &JsValue::from_str("startViewTransition"))
+        .unwrap_or(false);
+    if has_vt {
+        let start_vt: js_sys::Function = js_sys::Reflect::get(
+            doc_val,
+            &JsValue::from_str("startViewTransition"),
+        )?
+        .unchecked_into();
+        let finale_clone = finale.clone();
+        let cb = Closure::once(Box::new(move || {
+            let _ = finale_clone.class_list().add_1("show");
+        }) as Box<dyn FnOnce()>);
+        let _ = start_vt.call1(doc_val, cb.as_ref());
+        cb.forget();
+    } else {
+        add_class(&finale, "show")?;
+    }
 
     Ok(JsValue::NULL)
 }
@@ -73,14 +92,16 @@ async fn type_text(
     ms_per_char: u32,
     caret: &Element,
 ) -> Result<(), JsValue> {
-    caret.set_attribute("style", "visibility:visible")?;
+    caret.class_list().remove_1("hidden")?;
+    caret.class_list().add_1("visible")?;
     let chars: Vec<char> = text.chars().collect();
     for i in 0..=chars.len() {
         let s: String = chars.iter().take(i).collect();
         target.set_text_content(Some(&s));
         TimeoutFuture::new(ms_per_char).await;
     }
-    caret.set_attribute("style", "visibility:hidden")?;
+    caret.class_list().remove_1("visible")?;
+    caret.class_list().add_1("hidden")?;
     Ok(())
 }
 

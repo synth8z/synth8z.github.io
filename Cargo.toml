@@ -1,7 +1,10 @@
 [package]
 name = "synth8z_wasm"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+description = "synth8z - Protocols for the post-human economy"
+repository = "https://github.com/synth8z/synth8z.github.io"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]
@@ -12,7 +15,6 @@ wasm-bindgen-futures = "0.4"
 gloo-timers = { version = "0.3", features = ["futures"] }
 web-sys = { version = "0.3", features = [
   "console",
-  "CssStyleDeclaration",
   "Document",
   "DomTokenList",
   "Element",

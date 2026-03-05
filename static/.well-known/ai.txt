@@ -1,0 +1,5 @@
+# ai.txt — Machine-readable AI usage policy
+# See: https://site.spawning.ai/spawning-ai-txt
+
+User-Agent: *
+Disallow: /
